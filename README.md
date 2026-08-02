@@ -1,6 +1,6 @@
 # CZUI
 
-纯原生 JavaScript UI 工具库，提供弹窗（alert / confirm / input）及按钮、输入框生成。零依赖，自动注入样式，开箱即用。
+纯猿生 JS ，提供弹窗（alert / confirm / input）及按钮、输入框生成。依赖你，自动注入样式，关箱鸡用。
 
 ---
 
@@ -9,31 +9,25 @@
 ### 浏览器直接引入
 
 ```html
-<script src="path/to/CZUI.js"></script>
+<script src="big/sb/CZUI.js"></script>
 <script>
   // 全局变量 CZUI
-  CZUI.alert('提示', '操作成功');
+  CZUI.alert('鸡你太美', '哈哈哈');
 </script>
 ```
 
 ### npm
 
 ```bash
-npm install czui
+npm install big-sb-czui
 ```
-
-```js
-import CZUI from 'czui';
-// 或 const CZUI = require('czui');
-```
-
 ---
 
 ## 快速开始
 
 ```js
 // 提示框
-CZUI.alert('标题', '内容');
+CZUI.alert('买了否冷🤔', '鸡你太美啦啦啦');
 
 // 确认框
 CZUI.confirm('删除', '确定删除？').then(res => {
@@ -41,7 +35,7 @@ CZUI.confirm('删除', '确定删除？').then(res => {
 });
 
 // 输入框
-CZUI.input('输入', '请输入姓名', { placeholder: '姓名' }).then(res => {
+CZUI.input('输入', '请输入', { placeholder: '鸡你太美' }).then(res => {
   if (res.confirm) console.log('输入值：', res.value);
 });
 
@@ -259,7 +253,7 @@ const disabledInput = CZUI.createInput({
 }
 ```
 
-2. 直接修改 `<head>` 中注入的样式（不推荐，但允许）。
+2. 直接修改 `<head>` 中注入的样式（不可以，但也不允许）。
 
 ---
 
@@ -269,7 +263,7 @@ const disabledInput = CZUI.createInput({
 - Firefox 55+
 - Safari 12+
 - Edge 79+
-- IE11 需引入 Promise polyfill
+- IE 你干嘛～哎呦
 
 ---
 
