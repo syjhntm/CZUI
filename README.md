@@ -1,6 +1,6 @@
 # CZUI
 
-纯猿生 JS ，提供弹窗（alert / confirm / input）及按钮、输入框生成。依赖你，自动注入样式，关箱鸡用。
+提供弹窗（alert / confirm / input）及按钮、输入框生成。自动注入样式。
 
 ---
 
@@ -27,7 +27,7 @@ npm install big-sb-czui
 
 ```js
 // 提示框
-CZUI.alert('买了否冷🤔', '鸡你太美啦啦啦');
+CZUI.alert('🤔', '鸡你太美啦啦啦');
 
 // 确认框
 CZUI.confirm('删除', '确定删除？').then(res => {
@@ -253,7 +253,7 @@ const disabledInput = CZUI.createInput({
 }
 ```
 
-2. 直接修改 `<head>` 中注入的样式（不可以，但也不允许）。
+2. 直接修改 `<head>` 中注入的样式（不可以😭，但允许）。
 
 ---
 
@@ -263,7 +263,7 @@ const disabledInput = CZUI.createInput({
 - Firefox 55+
 - Safari 12+
 - Edge 79+
-- IE 你干嘛～哎呦
+- IE?
 
 ---
 
