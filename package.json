@@ -1,0 +1,21 @@
+{
+  "name": "big-sb-czui",
+  "version": "1.0.0",
+  "description": "Tiny zero-dependency browser UI: alert/confirm/input and helpers to create buttons and inputs. Single-file UMD build.",
+  "main": "CZUI.js",
+  "browser": "CZUI.js",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": ["czui", "ui", "alert", "confirm", "input", "button", "frontend"],
+  "author": "syjhntm",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/syjhntm/CZUI.git"
+  },
+  "files": [
+    "CZUI.js",
+    "README.md"
+  ]
+}
