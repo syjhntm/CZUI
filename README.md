@@ -1,272 +1,228 @@
 # CZUI
 
-提供弹窗（alert / confirm / input）及按钮、输入框生成。自动注入样式。
+[English](#english) | [中文](#中文)
 
 ---
 
-## 安装
+## What is CZUI
 
-### 浏览器直接引入
+CZUI is a tiny, zero-dependency browser UI utility that provides simple modal dialogs (alert / confirm / input) and helpers to create styled buttons and inputs. It is distributed as a single UMD file (CZUI.js) that injects its own CSS into the page at runtime.
+
+This repository contains the build artifact (CZUI.js) and usage documentation.
+
+---
+
+## Table of contents
+
+- [What is CZUI](#what-is-czui)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [API](#api)
+- [Styles & Customization](#styles--customization)
+- [Browser compatibility](#browser-compatibility)
+- [License](#license)
+
+---
+
+## Installation
+
+### Browser (direct script include)
+
+Include the file in a page and call the global `CZUI` object:
 
 ```html
-<script src="big/sb/CZUI.js"></script>
+<script src="CZUI.js"></script>
 <script>
-  // 全局变量 CZUI
-  CZUI.alert('鸡你太美', '哈哈哈');
+  CZUI.alert('Saved', 'Your data was saved successfully.');
 </script>
 ```
 
-### npm
+If you publish to a CDN or include from a different path, update the `src` accordingly.
+
+### npm (package name in this repo)
+
+This repository contains a `package.json` with `name: big-sb-czui`. If you published the package to npm, you could install it with:
 
 ```bash
 npm install big-sb-czui
 ```
+
+Note: This repo currently contains the single-file build (CZUI.js). If you want a library source tree (src/, build scripts, tests), see the "Improvements" section below or request that I add a build setup.
+
 ---
 
-## 快速开始
+## Quick start
 
-```js
-// 提示框
-CZUI.alert('🤔', '鸡你太美啦啦啦');
+```html
+<script src="CZUI.js"></script>
+<script>
+  // Alert
+  CZUI.alert('Notice', 'This is a simple alert.');
 
-// 确认框
-CZUI.confirm('删除', '确定删除？').then(res => {
-  if (res.confirm) console.log('确认删除');
-});
+  // Confirm
+  CZUI.confirm('Delete', 'Are you sure you want to delete this item?').then(({ confirm }) => {
+    if (confirm) console.log('Confirmed');
+  });
 
-// 输入框
-CZUI.input('输入', '请输入', { placeholder: '鸡你太美' }).then(res => {
-  if (res.confirm) console.log('输入值：', res.value);
-});
+  // Input
+  CZUI.input('Rename', 'Enter a new name', { placeholder: 'Name' }).then(({ confirm, value }) => {
+    if (confirm) console.log('New value:', value);
+  });
 
-// 生成按钮
-const btn = CZUI.createButton({
-  text: '提交',
-  primary: true,
-  onClick: () => alert('点击')
-});
-document.body.appendChild(btn);
+  // Create a styled button and attach to DOM
+  const btn = CZUI.createButton({ text: 'Submit', primary: true, onClick: () => alert('clicked') });
+  document.body.appendChild(btn);
 
-// 生成输入框
-const input = CZUI.createInput({
-  placeholder: '请输入',
-  onInput: e => console.log(e.target.value)
-});
-document.body.appendChild(input);
+  // Create a styled input element
+  const inputEl = CZUI.createInput({ placeholder: 'Type here' });
+  document.body.appendChild(inputEl);
+</script>
 ```
 
 ---
 
 ## API
 
+All functions return values described below. The library is synchronous where creating DOM elements; modal helpers return Promises for user interaction.
+
 ### CZUI.alert(title, text, options)
 
-显示提示弹窗，仅包含“确定”按钮。
+Show a simple modal with a single confirmation button.
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| `title` | string | 弹窗标题 |
-| `text` | string | 弹窗内容 |
-| `options.confirmText` | string | 确定按钮文字，默认 `'确定'` |
-| `options.tm` | number | 自动关闭延迟（毫秒），不设置则不自动关闭 |
+- title: string — modal title
+- text: string — modal message
+- options.confirmText?: string — text for the confirm button (default: "OK")
+- options.tm?: number — auto-close timeout in milliseconds (optional)
 
-**返回值**：`Promise`，点击确定后 resolve。
-
-**示例**：
-
-```js
-CZUI.alert('保存成功', '您的数据已保存', { confirmText: '好的' });
-
-CZUI.alert('提示', '3秒后关闭', { tm: 3000 }).then(() => {
-  console.log('弹窗已关闭');
-});
-```
-
----
+Returns: Promise that resolves when the user confirms or the modal auto-closes.
 
 ### CZUI.confirm(title, text, options)
 
-显示确认弹窗，包含“取消”和“确定”按钮。
+Show a modal with Cancel and Confirm buttons.
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| `title` | string | 标题 |
-| `text` | string | 内容 |
-| `options.confirmText` | string | 确定按钮文字，默认 `'确定'` |
-| `options.cancelText` | string | 取消按钮文字，默认 `'取消'` |
-| `options.tm` | number | 自动关闭延迟（毫秒） |
+- options.cancelText?: string — cancel button text
+- options.confirmText?: string — confirm button text
+- options.tm?: number — auto-close timeout
 
-**返回值**：`Promise<{ confirm: boolean }>`
-
-点击确定时 `confirm` 为 `true`，点击取消或自动关闭为 `false`。
-
-**示例**：
-
-```js
-CZUI.confirm('删除', '确定要删除这条记录吗？').then(({ confirm }) => {
-  if (confirm) {
-    // 执行删除
-  } else {
-    console.log('取消删除');
-  }
-});
-```
-
----
+Returns: Promise<{ confirm: boolean }>
 
 ### CZUI.input(title, text, options)
 
-显示带输入框的弹窗，包含输入框、“取消”和“提交”按钮。
+Show a modal with an input field plus Cancel and Submit buttons.
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| `title` | string | 标题 |
-| `text` | string | 提示文字 |
-| `options.inputVal` | string | 输入框默认值 |
-| `options.placeholder` | string | 输入框占位文字 |
-| `options.confirmText` | string | 提交按钮文字，默认 `'提交'` |
-| `options.cancelText` | string | 取消按钮文字，默认 `'取消'` |
-| `options.tm` | number | 自动关闭延迟（毫秒） |
+- options.inputVal?: string — initial input value
+- options.placeholder?: string — input placeholder
+- options.confirmText?: string — submit button text
+- options.cancelText?: string — cancel button text
+- options.tm?: number — auto-close timeout
 
-**返回值**：`Promise<{ confirm: boolean, value: string }>`
-
-确认时 `confirm` 为 `true`，`value` 为输入框当前值；取消或自动关闭时 `confirm` 为 `false`。
-
-**示例**：
-
-```js
-CZUI.input('修改昵称', '请输入新昵称', {
-  placeholder: '昵称',
-  inputVal: '当前昵称'
-}).then(({ confirm, value }) => {
-  if (confirm) {
-    console.log('新昵称：', value);
-  }
-});
-```
-
----
+Returns: Promise<{ confirm: boolean, value: string }>
 
 ### CZUI.cl()
 
-手动关闭当前打开的弹窗（如果有）。
+Closes the currently open modal (if any).
 
-**返回值**：`true`
-
-**示例**：
-
-```js
-CZUI.alert('加载中', '请稍候...', { tm: 5000 });
-// 用户可提前关闭
-CZUI.cl();
-```
-
----
+Returns: true
 
 ### CZUI.createButton(options)
 
-生成一个带预设样式的 `<button>` 元素。
+Create a styled `<button>` element.
 
-| 选项 | 类型 | 说明 |
-|------|------|------|
-| `text` | string | 按钮文本 |
-| `type` | string | 按钮 `type` 属性（如 `'submit'`） |
-| `primary` | boolean | 是否为主按钮（蓝色背景） |
-| `accent` | boolean | 是否为强调按钮（粉色背景） |
-| `disabled` | boolean | 是否禁用 |
-| `style` | object | 自定义样式对象 |
-| `onClick` | function | 点击事件回调，接收 `event` 参数 |
+Options:
+- text?: string
+- type?: string
+- primary?: boolean — adds primary style
+- accent?: boolean — adds accent style
+- disabled?: boolean
+- style?: object — inline styles
+- onClick?: function
 
-**返回值**：`HTMLButtonElement`
-
-**示例**：
-
-```js
-const btn = CZUI.createButton({
-  text: '提交表单',
-  type: 'submit',
-  primary: true,
-  style: { marginTop: '10px' },
-  onClick: (e) => {
-    console.log('按钮被点击', e);
-  }
-});
-document.body.appendChild(btn);
-
-const dangerBtn = CZUI.createButton({
-  text: '删除',
-  accent: true,
-  disabled: false,
-  onClick: () => confirm('确定删除？')
-});
-```
-
----
+Returns: HTMLButtonElement
 
 ### CZUI.createInput(options)
 
-生成一个带预设样式的 `<input>` 元素。
+Create a styled `<input>` element.
 
-| 选项 | 类型 | 说明 |
-|------|------|------|
-| `type` | string | 输入框类型（如 `'text'`、`'password'`、`'email'`） |
-| `placeholder` | string | 占位文字 |
-| `value` | string | 初始值 |
-| `disabled` | boolean | 是否禁用 |
-| `style` | object | 自定义样式对象 |
-| `onInput` | function | 输入事件回调，接收 `event` 参数 |
+Options:
+- type?: string
+- placeholder?: string
+- value?: string
+- disabled?: boolean
+- style?: object
+- onInput?: function
 
-**返回值**：`HTMLInputElement`
-
-**示例**：
-
-```js
-const input = CZUI.createInput({
-  type: 'email',
-  placeholder: '请输入邮箱地址',
-  style: { width: '200px' },
-  onInput: (e) => {
-    console.log('当前值：', e.target.value);
-  }
-});
-document.body.appendChild(input);
-
-const disabledInput = CZUI.createInput({
-  placeholder: '已禁用',
-  disabled: true,
-  value: '不可编辑'
-});
-```
+Returns: HTMLInputElement
 
 ---
 
-## 样式说明
+## Styles & customization
 
-库会在首次调用时自动注入 CSS，所有类名前缀统一为 `czui-`。
+CZUI injects its CSS into the document head on first use. All classes are prefixed with `czui-` or `a-` in the shipped build. To customize styles you can:
 
-如需自定义样式，有两种方式：
+1. Override CSS classes in your stylesheet. Example:
 
-1. 覆盖 CSS 类名：
 ```css
-.czui-btn--primary {
-  background: #your-color;
-}
+.czui-btn--primary { background: #007bff; }
 ```
 
-2. 直接修改 `<head>` 中注入的样式（不可以😭，但允许）。
+2. Apply inline styles to elements created via `createButton` / `createInput` using the `style` option.
 
 ---
 
-## 浏览器兼容性
+## Browser compatibility
 
+Designed for modern browsers:
 - Chrome 60+
 - Firefox 55+
 - Safari 12+
 - Edge 79+
-- IE?
+
+Not tested in IE. The code uses standard DOM APIs and a UMD wrapper.
 
 ---
 
 ## License
 
 MIT
+
+---
+
+## Improvements & notes
+
+- This repo currently contains a single-file UMD build (CZUI.js). If you want a development setup (source files, build scripts, ESM/CJS outputs, types, tests, CI), I can add a project layout with rollup/webpack and a `package.json` configured for publishing.
+
+---
+
+## ENGLISH
+
+<a name="english"></a>
+
+# CZUI
+
+CZUI is a tiny, zero-dependency browser UI utility providing simple modal dialogs (alert / confirm / input) and helper functions to create styled buttons and inputs. It ships as a single UMD file (CZUI.js) and injects the necessary CSS automatically when used.
+
+### Quick usage
+
+Include `CZUI.js` in your page and use the global `CZUI` object (see the Quick start section above for full examples).
+
+### API
+
+Same as described above in the main (Chinese) section — the function names and parameters are identical.
+
+---
+
+## 中文
+
+<a name="中文"></a>
+
+# CZUI
+
+CZUI 是一个极小、无依赖的浏览器端 UI 库，提供基本的模态弹窗（alert / confirm / input）以及生成样式化按钮和输入框的辅助函数。以单文件 UMD（CZUI.js）发布，首次调用时会自动注入样式。
+
+### 快速使用
+
+在页面中引入 `CZUI.js`，使用全局对象 `CZUI`（示例见上文）。
+
+### API
+
+与上文英文部分一致。
